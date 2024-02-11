@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class ChangeLeadPipelineStageIdConstraintInLeadsTable extends Migration
@@ -14,8 +15,9 @@ class ChangeLeadPipelineStageIdConstraintInLeadsTable extends Migration
     public function up()
     {
         Schema::table('leads', function (Blueprint $table) {
-            $table->dropForeign(['lead_pipeline_stage_id']);
-
+            if(DB::getDriverName() !== 'sqlite') {
+                $table->dropForeign(['lead_pipeline_stage_id']);
+            }
             $table->foreign('lead_pipeline_stage_id')->references('id')->on('lead_pipeline_stages')->onDelete('set null');
         });
     }

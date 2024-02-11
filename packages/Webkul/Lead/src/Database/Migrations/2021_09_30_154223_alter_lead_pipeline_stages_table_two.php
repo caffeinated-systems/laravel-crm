@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-class AlterLeadPipelineStagesTable extends Migration
+class AlterLeadPipelineStagesTableTwo extends Migration
 {
     /**
      * Run the migrations.
@@ -15,8 +15,14 @@ class AlterLeadPipelineStagesTable extends Migration
     public function up()
     {
         Schema::table('lead_pipeline_stages', function (Blueprint $table) {
-            $table->string('code')->after('id')->nullable();
-            $table->string('name')->after('code')->nullable();
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->dropForeign('lead_pipeline_stages_lead_stage_id_foreign');
+            }
+
+            $table->dropColumn('lead_stage_id');
+
+            $table->unique(['code', 'lead_pipeline_id']);
+            $table->unique(['name', 'lead_pipeline_id']);
         });
     }
 
